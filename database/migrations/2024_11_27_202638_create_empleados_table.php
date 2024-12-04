@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('empleados', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('numero_emp')->unsigned()->length(10);
+            $table->string('numero_emp', 20)->default('S/N');
             $table->string('nombre', 100);
+            $table->string('area', 200);
             $table->timestamps();
         });
     }

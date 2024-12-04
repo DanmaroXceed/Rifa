@@ -13,7 +13,7 @@ class empleadosSeeder extends Seeder
      */
     public function run(): void
     {
-        $csvFile = fopen(base_path("catalogos/empleados.csv"), "r");
+        $csvFile = fopen(base_path("catalogos/Sorteofiscalia2024.csv"), "r");
 
         $firstline = true;
 
@@ -22,6 +22,7 @@ class empleadosSeeder extends Seeder
                 empleado::create([
                     "numero_emp" => $data[0],
                     "nombre" => $data[1],
+                    "area" => $data[2],
                 ]);   
             }
             $firstline = false;

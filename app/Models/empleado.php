@@ -9,5 +9,6 @@ class empleado extends Model
     protected $fillable = [
         'numero_emp',
         'nombre',
+        'area'
     ];
 }
