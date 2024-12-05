@@ -244,6 +244,16 @@
         scrollbar-width: thin; /* Estilo general en Firefox */
         scrollbar-color: #007bff #f1f1f1; /* Color del pulgar y del fondo */
     }
+
+    .empleado-item.selected {
+        background-color: blue;
+        color: white;
+    }
+
+    .empleado-item.winner {
+        background-color: green;
+        color: white;
+    }
 </style>
 
     <div class="content-section">
@@ -261,7 +271,7 @@
         </div>
         <div class="empleados d-none" id="employee">
             @foreach ($empleados as $e)
-                <div class="empleado-item">
+                <div class="empleado-item" data-index="{{ $loop->index }}">
                     {{ $e->nombre }}
                 </div>
             @endforeach
@@ -323,12 +333,44 @@
             let randomIndex = Math.floor(Math.random() * empleados.length);
             let randomEmpleado = empleados[randomIndex];
             rouletteDiv.textContent = `🎡 ${randomEmpleado.numero_emp} - ${randomEmpleado.nombre}`;
+            
+            // Resaltar el nombre en la lista y centrarlo
+            highlightEmployeeInList(randomIndex);
         }, 100);
 
         setTimeout(() => {
             clearInterval(interval);
             selectWinner();
         }, 3000);
+    }
+
+    function highlightWinnerInList(index) {
+        const employeeItems = document.querySelectorAll('.empleado-item');
+        const selectedEmployee = employeeItems[index];
+        
+        // Marcar al ganador como verde
+        selectedEmployee.classList.add('winner');  // Asegúrate de que la clase 'winner' esté definida en tu CSS
+    }
+
+    function highlightEmployeeInList(index) {
+        const employeeItems = document.querySelectorAll('.empleado-item');
+        const employeeContainer = document.getElementById('employee');
+
+        // Quitar cualquier clase previamente agregada
+        employeeItems.forEach(item => item.classList.remove('selected'));
+
+        // Agregar la clase 'selected' al empleado actual
+        const selectedEmployee = employeeItems[index];
+        selectedEmployee.classList.add('selected');
+
+        // Asegurarse de que el elemento sea visible en el contenedor
+        const containerHeight = employeeContainer.offsetHeight;
+        const employeeHeight = selectedEmployee.offsetHeight;
+        const employeeOffset = selectedEmployee.offsetTop;
+
+        employeeContainer.scrollTo({
+            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2),
+        });
     }
 
     function selectWinner() {
@@ -338,22 +380,27 @@
         do {
             randomIndex = Math.floor(Math.random() * empleados.length);
             randomEmpleado = empleados[randomIndex];
-        } while (winners.includes(randomEmpleado.numero_emp));
+        } while (winners.some(winner => winner.numero_emp === randomEmpleado.numero_emp)); // Verifica si ya ha ganado
+
+        // Marca al ganador en la lista
+        markAsWinner(randomIndex);
 
         winners.push({
-            numero_emp: empleados[randomIndex].numero_emp,  // Asigna el número de empleado correctamente
-            nombre: empleados[randomIndex].nombre,          // Asigna el nombre del empleado correctamente
-            // label: labels[currentWinnerIndex]                       // Asigna la etiqueta del ganador (Tercer, Segundo, Primer)
+            numero_emp: empleados[randomIndex].numero_emp,
+            nombre: empleados[randomIndex].nombre,
         });
+
         rouletteDiv.classList.add('d-none');
         winnerDiv.classList.remove('d-none');
         winnerNumber.textContent = randomEmpleado.numero_emp;
         winnerName.textContent = randomEmpleado.nombre;
-        // winnerLabel.textContent = labels[currentWinnerIndex];
         addWinnerToList(randomEmpleado);
 
-        // Elimina al ganador de la lista de empleados
-        empleados.splice(randomIndex, 1);
+        // Quitar la clase 'selected' de todos los empleados
+        removeHighlightFromAllEmployees();
+
+        // Mueve el scroll hasta el ganador
+        scrollToWinner(randomIndex);
 
         currentWinnerIndex++;
 
@@ -368,6 +415,12 @@
 
         winnerList.classList.remove('d-none');
         winnerDiv.classList.remove('d-none');
+    }
+
+    function markAsWinner(index) {
+        const employeesDiv = document.querySelectorAll('.empleado-item');
+        employeesDiv[index].classList.remove('selected');
+        employeesDiv[index].classList.add('winner');
     }
 
     function addWinnerToList(winner) {
@@ -405,6 +458,31 @@
             winnersList.appendChild(winnerItem);
         });
     }
+
+    // Nueva función para mover el scroll al ganador
+    function scrollToWinner(index) {
+        const employeeItems = document.querySelectorAll('.empleado-item');
+        const employeeContainer = document.getElementById('employee');
+        
+        const selectedEmployee = employeeItems[index];
+        
+        // Desplazarse hasta el ganador
+        const containerHeight = employeeContainer.offsetHeight;
+        const employeeHeight = selectedEmployee.offsetHeight;
+        const employeeOffset = selectedEmployee.offsetTop;
+
+        // Desplazar el scroll para que el ganador quede centrado
+        employeeContainer.scrollTo({
+            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2),
+        });
+    }
+
+    function removeHighlightFromAllEmployees() {
+    const employeeItems = document.querySelectorAll('.empleado-item');
+    employeeItems.forEach(item => {
+        item.classList.remove('selected');  // Elimina la clase 'highlight' de todos
+    });
+}
 
 </script>
 @endsection
