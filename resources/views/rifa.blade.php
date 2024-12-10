@@ -23,7 +23,7 @@
 
     h1 {
         font-size: 2.5rem;
-        color: #007bff;
+        color: #8ac3ff;
         margin-bottom: 20px;
     }
 
@@ -39,14 +39,13 @@
         }
     }
     .winner {
-        font-size: 1.5rem;
-        margin-top: 20px;
-        color: #28a745;
+        /* font-size: 1.5rem; */
+        color: #1bd647;
     }
     .winner-list {
         margin-top: 40px;
         font-size: 1.2rem;
-        color: #555;
+        color: #ffffff;
     }
     #roulette h2 {
         font-size: 2rem;
@@ -133,7 +132,7 @@
         margin: 10px 0;
         padding: 10px;
         background-color: #fff;
-        color: #28a745;
+        color: #1bd647;
         border-radius: 5px;
         width: 80%;
         animation: slideIn 0.5s ease-out;
@@ -149,7 +148,7 @@
 
     .winner-name {
         font-size: 1.4rem;
-        color: #28a745;
+        color: #1bd647;
     }
 
     @keyframes fadeIn {
@@ -197,7 +196,7 @@
 
     .empleados {
         margin: 20px;
-        height: 300px; /* Altura fija */
+        height: 70vh; /* Altura fija */
         width: 95%; /* Ocupa el ancho completo */
         background-color: #f8f9fa; /* Color de fondo */
         padding: 10px; /* Espaciado interno */
@@ -218,6 +217,7 @@
         padding: 10px; /* Espaciado interno */
         text-align: center; /* Centrar texto */
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra */
+        color: #333;
     }
 
     /* Personalización del scrollbar para navegadores compatibles */
@@ -254,10 +254,56 @@
         background-color: green;
         color: white;
     }
+
+    /* Contenedor del video */
+    .video-container {
+        position: fixed; /* Hace que el video esté en el fondo */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Coloca el video detrás de los demás elementos */
+        overflow: hidden;
+    }
+
+    /* Estilo para el video */
+    #background-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Asegura que el video cubra toda el área del contenedor */
+    }
+
+    /* Capa oscura sobre el video */
+    .video-container::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Ajusta el valor del opacidad (0.5) para más o menos oscuridad */
+        z-index: 1; /* Asegura que el filtro oscuro esté sobre el video, pero debajo del contenido */
+    }
+
+    /* Estilo del contenido */
+    .content {
+        position: relative;
+        z-index: 2; /* Asegura que el contenido esté encima del video y la capa oscura */
+        color: white; /* Para que el contenido sea legible sobre el fondo oscuro */
+        padding: 20px;
+    }
+
 </style>
 
-    <div class="content-section">
-        <h1 id="title">Rifa Navideña 2024</h1>
+    <div class="video-container">
+        <video autoplay muted loop id="background-video">
+            <source src={{ asset('background.mp4') }} type="video/mp4">
+            Tu navegador no soporta el formato de video.
+        </video>
+    </div>
+
+    <div class="content-section content">
+        <h1 id="title">Rifa Navideña Posada Fiscalia 2024</h1>
         <div class="button-container">
             <button id="raffleButton" class="btn btn-primary btn-lg btn-animated">
                 <i class="bi bi-play-fill"></i>
@@ -267,7 +313,7 @@
             </button>
         </div>
         <div id="roulette" class="d-none">
-            <h2>🎡 Girando...</h2>
+            <h2></h2>
         </div>
         <div class="empleados d-none" id="employee">
             @foreach ($empleados as $e)
@@ -296,6 +342,7 @@
     let empleados = @json($empleados);
     let winners = [];
     let currentWinnerIndex = 0;
+    let play = false;
 
     const raffleButton = document.getElementById('raffleButton');
     const stopButton = document.getElementById('stopButton');
@@ -307,19 +354,28 @@
     const title = document.getElementById('title');
     const employee = document.getElementById('employee');
 
-    const elements = document.querySelectorAll('.content-section');
+    const cssContSect = document.querySelectorAll('.content-section');
+    const cssEmpl = document.querySelectorAll('.empleados');
 
     raffleButton.addEventListener('click', () => {
         rouletteDiv.classList.remove('d-none');
         employee.classList.remove('d-none');
-        raffleButton.classList.add('d-none');
-        stopButton.classList.add('d-none');
-        winnerDiv.classList.add('d-none');
-
-        elements.forEach(element => {
+        
+        cssContSect.forEach(element => {
             element.style.marginTop = '20px';
         });
-        startRoulette();
+
+        if(play === true){
+            cssEmpl.forEach(element => {
+                element.style.height = '300px';
+            });
+            raffleButton.classList.add('d-none');
+            stopButton.classList.add('d-none');
+            winnerDiv.classList.add('d-none');
+            startRoulette();
+        }
+
+        play = true;
     });
 
     stopButton.addEventListener('click', () => {
@@ -332,7 +388,7 @@
         let interval = setInterval(() => {
             let randomIndex = Math.floor(Math.random() * empleados.length);
             let randomEmpleado = empleados[randomIndex];
-            rouletteDiv.textContent = `🎡 ${randomEmpleado.numero_emp} - ${randomEmpleado.nombre}`;
+            rouletteDiv.textContent = `${randomEmpleado.numero_emp} - ${randomEmpleado.nombre}`;
             
             // Resaltar el nombre en la lista y centrarlo
             highlightEmployeeInList(randomIndex);
@@ -369,7 +425,7 @@
         const employeeOffset = selectedEmployee.offsetTop;
 
         employeeContainer.scrollTo({
-            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2),
+            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2) - 125,
         });
     }
 
@@ -388,6 +444,7 @@
         winners.push({
             numero_emp: empleados[randomIndex].numero_emp,
             nombre: empleados[randomIndex].nombre,
+            area: empleados[randomIndex].area,
         });
 
         rouletteDiv.classList.add('d-none');
@@ -452,7 +509,7 @@
             
             // Muestra el label arriba del nombre
             winnerItem.innerHTML = `
-                <div class="winner-name">${winner.numero_emp} - ${winner.nombre}</div>
+                <div class="winner-name">${winner.numero_emp} - <strong>${winner.nombre}</strong> <br> ${winner.area}</div>
             `;
             
             winnersList.appendChild(winnerItem);
@@ -473,7 +530,7 @@
 
         // Desplazar el scroll para que el ganador quede centrado
         employeeContainer.scrollTo({
-            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2),
+            top: employeeOffset - (containerHeight / 2) + (employeeHeight / 2) - 105,
         });
     }
 

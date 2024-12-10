@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class MainController extends Controller
 {
     public function index(){
-        $empleados = empleado::select('numero_emp', 'nombre')->get();
+        $empleados = empleado::select('numero_emp', 'nombre', 'area')->get();
         return view('rifa',  compact('empleados'));
     }
 }
