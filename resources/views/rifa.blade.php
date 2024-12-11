@@ -293,6 +293,85 @@
         padding: 20px;
     }
 
+/* Estilos del Modal sin fondo */
+.raffle-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.raffle-modal-content {
+  position: relative;
+  background-color: transparent;
+  padding: 20px;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.raffle-countdown {
+  font-size: 3em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.raffle-prizes {
+  font-size: 1.5em;
+  color: white;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.raffle-prizes span {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+}
+
+.raffle-prizes .selected {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.close-modal-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2em;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  color: #dc3545;
+}
+
+/* Animación de selección de premio */
+@keyframes selectPrizeAnimation {
+  0% { opacity: 0.5; }
+  25% { opacity: 1; }
+  50% { opacity: 0.5; }
+  75% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.rolling-text {
+  animation: selectPrizeAnimation 0.5s infinite;
+}
+
+
 </style>
 
     <div class="video-container">
@@ -336,10 +415,20 @@
         <div id="winnersList" class="winners-list"></div>
     </div>
 
+    <div id="raffleModal" class="raffle-modal">
+        <div class="raffle-modal-content">
+          <div id="rafflePrizes" class="raffle-prizes d-none"></div>
+          <div id="countdown" class="raffle-countdown"></div>
+          <div id="raffleWinner" class="raffle-countdown d-none"></div>
+          <button id="closeModalBtn" class="close-modal-btn">&times;</button>
+        </div>
+      </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
 
 <script>
     let empleados = @json($empleados);
+    let premios = ['premio1', 'premio2', 'premio3']
     let winners = [];
     let currentWinnerIndex = 0;
     let play = false;
@@ -458,8 +547,11 @@
 
         // Mueve el scroll hasta el ganador
         scrollToWinner(randomIndex);
-
+        
         currentWinnerIndex++;
+
+        // Seleccion aleatoria de premio
+        iniciarRifa(premios);
 
         raffleButton.textContent = "Reanudar";
         raffleButton.classList.add('small-font');
@@ -472,6 +564,113 @@
 
         winnerList.classList.remove('d-none');
         winnerDiv.classList.remove('d-none');
+    }
+
+    function iniciarRifa() {
+        const modal = document.getElementById('raffleModal');
+        const countdownElement = document.getElementById('countdown');
+        const prizesContainer = document.getElementById('rafflePrizes');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const winnerElement = document.getElementById('raffleWinner');
+        
+        countdownElement.classList.remove('d-none');
+        prizesContainer.classList.add('d-none');
+        winnerElement.classList.add('d-none');
+
+        // Mostrar el modal
+        modal.style.display = 'flex';
+        
+        // Iniciar la cuenta regresiva
+        let countdown = 5;
+        countdownElement.textContent = countdown;
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown === 0) {
+                countdownElement.classList.add('d-none');
+                prizesContainer.classList.remove('d-none');
+                clearInterval(countdownInterval);
+                // Mostrar todos los premios
+                displayPrizes(premios);
+                startSelection();
+            }
+        }, 1000);
+
+        // Cerrar el modal
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            isRaffleInProgress = false;
+        });
+    }
+
+    function displayPrizes(prizes) {
+        const prizesContainer = document.getElementById('rafflePrizes');
+        prizesContainer.innerHTML = '';
+        prizes.forEach(prize => {
+            const prizeElement = document.createElement('span');
+            prizeElement.textContent = prize;
+            prizeElement.id = `prize-${prize}`;
+            prizesContainer.appendChild(prizeElement);
+        });
+    }
+
+    function startSelection() {
+        const prizesContainer = document.getElementById('rafflePrizes');
+        
+        // Animación de selección aleatoria
+        const interval = setInterval(() => {
+            const randomPrizeIndex = Math.floor(Math.random() * premios.length);
+            const currentPrize = premios[randomPrizeIndex];
+            
+            // Resaltar el premio actual
+            highlightPrize(currentPrize);
+        }, 100);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            const winnerPrize = getRandomPrize();
+            highlightPrize(winnerPrize, true); // Marcar como ganador
+            const winnerElement = document.getElementById('raffleWinner');
+
+            // Mostrar el premio ganador
+            winnerElement.classList.remove('d-none');
+            winnerElement.textContent = `¡El premio ganador es: ${winnerPrize}!`;
+            winnerElement.style.display = 'block';
+            // Eliminar el premio de la lista
+            removePrize(winnerPrize);
+
+        }, 5000); // Detener la animación después de 5 segundos
+    }
+
+    function highlightPrize(prize, isWinner = false) {
+        const prizeElement = document.getElementById(`prize-${prize}`);
+        const allPrizeElements = document.querySelectorAll('.raffle-prizes span');
+
+        // Eliminar la clase de selección de todos los premios
+        allPrizeElements.forEach(elem => elem.classList.remove('selected'));
+
+        // Añadir la clase 'selected' al premio actual
+        prizeElement.classList.add('selected');
+
+        // Si es el ganador, se marca con un color llamativo
+        if (isWinner) {
+            prizeElement.style.color = '#28a745';
+            prizeElement.style.fontWeight = 'bold';
+        }
+    }
+
+    function getRandomPrize() {
+        const randomIndex = Math.floor(Math.random() * premios.length);
+        return premios[randomIndex];
+    }
+
+    function removePrize(prize) {
+        const prizeIndex = premios.indexOf(prize);
+        if (prizeIndex > -1) {
+            premios.splice(prizeIndex, 1); // Eliminar el premio de la lista
+        }
     }
 
     function markAsWinner(index) {
