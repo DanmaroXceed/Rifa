@@ -198,9 +198,8 @@
         margin: 20px;
         height: 70vh; /* Altura fija */
         width: 95%; /* Ocupa el ancho completo */
-        background-color: #f8f9fa; /* Color de fondo */
+        background-color: #f8f9fa00; /* Color de fondo */
         padding: 10px; /* Espaciado interno */
-        border: 1px solid #dee2e6; /* Borde para un recuadro */
         border-radius: 5px; /* Bordes redondeados */
         overflow-y: auto; /* Desplazamiento vertical si es necesario */
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
@@ -293,85 +292,112 @@
         padding: 20px;
     }
 
-/* Estilos del Modal sin fondo */
-.raffle-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+    /* Estilos del Modal sin fondo */
+    .raffle-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
 
-.raffle-modal-content {
-  position: relative;
-  background-color: transparent;
-  padding: 20px;
-  text-align: center;
-  max-width: 500px;
-  width: 100%;
-}
+    .raffle-modal-content {
+        position: relative;
+        background-color: transparent;
+        padding: 20px;
+        text-align: center;
+        max-width: 1000px;
+        width: 100%;
+    }
 
-.raffle-countdown {
-  font-size: 3em;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 20px;
-}
+    .raffle-countdown {
+        font-size: 3em;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 20px;
+    }
 
-.raffle-prizes {
-  font-size: 1.5em;
-  color: white;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    .raffle-prizes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        overflow-y: auto;
+        max-height: 500px; /* Define la altura máxima del contenedor */
+        padding: 10px;
+    }
 
-.raffle-prizes span {
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 5px;
-}
+    .raffle-prizes span {
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-align: center;
+        padding: 10px;
+        transition: background-color 0.3s, color 0.3s;
+    }
 
-.raffle-prizes .selected {
-  color: #28a745;
-  font-weight: bold;
-}
+    .raffle-prizes span.selected {
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+    }
 
-.close-modal-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 2em;
-  color: white;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
+    .close-modal-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 2em;
+        color: white;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
 
-.close-modal-btn:hover {
-  color: #dc3545;
-}
+    .close-modal-btn:hover {
+        color: #dc3545; 
+    }
 
-/* Animación de selección de premio */
-@keyframes selectPrizeAnimation {
-  0% { opacity: 0.5; }
-  25% { opacity: 1; }
-  50% { opacity: 0.5; }
-  75% { opacity: 1; }
-  100% { opacity: 0.5; }
-}
+    /* Animación de selección de premio */
+    @keyframes selectPrizeAnimation {
+        0% { opacity: 0.5; }
+        25% { opacity: 1; }
+        50% { opacity: 0.5; }
+        75% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
 
-.rolling-text {
-  animation: selectPrizeAnimation 0.5s infinite;
-}
+    .rolling-text {
+        animation: selectPrizeAnimation 0.5s infinite;
+    }
 
+    /* Personalización del scrollbar para navegadores compatibles */
+    .raffle-prizes::-webkit-scrollbar {
+        width: 8px; /* Ancho del scroll */
+    }
 
+    .raffle-prizes::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Color de fondo del track */
+        border-radius: 10px; /* Bordes redondeados */
+    }
+
+    .raffle-prizes::-webkit-scrollbar-thumb {
+        background: #007bff; /* Color del "pulgar" del scroll */
+        border-radius: 10px; /* Bordes redondeados */
+    }
+
+    .raffle-prizes::-webkit-scrollbar-thumb:hover {
+        background: #0056b3; /* Color más oscuro al pasar el mouse */
+    }
+
+    /* Para navegadores que no usan Webkit, mantener el diseño legible */
+    .raffle-prizes {
+        scrollbar-width: thin; /* Estilo general en Firefox */
+        scrollbar-color: #007bff #f1f1f1; /* Color del pulgar y del fondo */
+    }
 </style>
 
     <div class="video-container">
@@ -405,7 +431,7 @@
             <p><span id="winnerNumber"></span> - <span id="winnerName"></span></p>
             <p id="winnerLabel"></p>
         </div>
-        <div id="winnerList" class="winner-list d-none">
+        <div id="winnerList" class="winner-list d-none" style="overflow-y: auto; ">
             <strong>Ganadores</strong>
         </div>
     </div>
@@ -417,21 +443,28 @@
 
     <div id="raffleModal" class="raffle-modal">
         <div class="raffle-modal-content">
-          <div id="rafflePrizes" class="raffle-prizes d-none"></div>
-          <div id="countdown" class="raffle-countdown"></div>
-          <div id="raffleWinner" class="raffle-countdown d-none"></div>
-          <button id="closeModalBtn" class="close-modal-btn">&times;</button>
+            <div id="rafflePrizes" class="raffle-prizes d-none" 
+                style="display: grid; 
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
+                gap: 10px; overflow-y: auto; 
+                max-height: 750px; 
+                padding: 10px;"></div>
+            <div id="countdown" class="raffle-countdown"></div>
+            <div id="raffleWinner" class="raffle-countdown d-none"></div>
+            <button id="closeModalBtn" class="close-modal-btn">&times;</button>
         </div>
-      </div>
+    </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
 
 <script>
     let empleados = @json($empleados);
-    let premios = ['premio1', 'premio2', 'premio3']
+    let premios = @json($premios);
+    let premiosMayores = @json($premiosMayores);
     let winners = [];
     let currentWinnerIndex = 0;
     let play = false;
+    let premioActual = '';
 
     const raffleButton = document.getElementById('raffleButton');
     const stopButton = document.getElementById('stopButton');
@@ -439,6 +472,7 @@
     const winnerDiv = document.getElementById('winner');
     const winnerNumber = document.getElementById('winnerNumber');
     const winnerName = document.getElementById('winnerName');
+    const winnerPrize = document.getElementById('winnerPrize');
     const winnerList = document.getElementById('winnerList');
     const title = document.getElementById('title');
     const employee = document.getElementById('employee');
@@ -530,17 +564,27 @@
         // Marca al ganador en la lista
         markAsWinner(randomIndex);
 
-        winners.push({
-            numero_emp: empleados[randomIndex].numero_emp,
-            nombre: empleados[randomIndex].nombre,
-            area: empleados[randomIndex].area,
-        });
+        // Seleccion aleatoria de premio
+        setTimeout(function() {
+            iniciarRifa(premios);
+        }, 3000);
+
+        // Ejecutar hasta aqui, al terminar iniciarRifa continua con el codigo
 
         rouletteDiv.classList.add('d-none');
         winnerDiv.classList.remove('d-none');
         winnerNumber.textContent = randomEmpleado.numero_emp;
         winnerName.textContent = randomEmpleado.nombre;
-        addWinnerToList(randomEmpleado);
+        setTimeout(function() {
+            addWinnerToList(randomEmpleado);
+                winners.push({
+                numero_emp: empleados[randomIndex].numero_emp,
+                nombre: empleados[randomIndex].nombre,
+                area: empleados[randomIndex].area,
+                n_premio: premioActual.numero_premio,
+                premio: premioActual.premio
+            });
+        }, 17000);
 
         // Quitar la clase 'selected' de todos los empleados
         removeHighlightFromAllEmployees();
@@ -550,13 +594,9 @@
         
         currentWinnerIndex++;
 
-        // Seleccion aleatoria de premio
-        iniciarRifa(premios);
-
         raffleButton.textContent = "Reanudar";
         raffleButton.classList.add('small-font');
         raffleButton.classList.add('btn-fix');
-        raffleButton.classList.remove('d-none');
         raffleButton.classList.remove('btn');
 
         stopButton.classList.remove('d-none');
@@ -572,80 +612,91 @@
         const prizesContainer = document.getElementById('rafflePrizes');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const winnerElement = document.getElementById('raffleWinner');
-        
+
         countdownElement.classList.remove('d-none');
         prizesContainer.classList.add('d-none');
         winnerElement.classList.add('d-none');
 
         // Mostrar el modal
         modal.style.display = 'flex';
-        
+
         // Iniciar la cuenta regresiva
         let countdown = 5;
         countdownElement.textContent = countdown;
-        
+
         const countdownInterval = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;
-            
+
             if (countdown === 0) {
                 countdownElement.classList.add('d-none');
                 prizesContainer.classList.remove('d-none');
                 clearInterval(countdownInterval);
+
                 // Mostrar todos los premios
-                displayPrizes(premios);
-                startSelection();
+                if (currentWinnerIndex % 4 === 0) {
+                    displayPrizes(premiosMayores);
+                    startSelection(premiosMayores);
+                } else {
+                    displayPrizes(premios);
+                    startSelection(premios);
+                }
             }
         }, 1000);
 
         // Cerrar el modal
         closeModalBtn.addEventListener('click', () => {
             modal.style.display = 'none';
-            isRaffleInProgress = false;
+            raffleButton.classList.remove('d-none');
         });
     }
 
     function displayPrizes(prizes) {
         const prizesContainer = document.getElementById('rafflePrizes');
         prizesContainer.innerHTML = '';
+
+        // Mostrar solo el numero_premio
         prizes.forEach(prize => {
             const prizeElement = document.createElement('span');
-            prizeElement.textContent = prize;
-            prizeElement.id = `prize-${prize}`;
+            prizeElement.textContent = prize.numero_premio; // Mostrar solo el número
+            prizeElement.id = `prize-${prize.numero_premio}`;
             prizesContainer.appendChild(prizeElement);
         });
     }
 
-    function startSelection() {
+    function startSelection(prizes) {
         const prizesContainer = document.getElementById('rafflePrizes');
-        
+
         // Animación de selección aleatoria
         const interval = setInterval(() => {
-            const randomPrizeIndex = Math.floor(Math.random() * premios.length);
-            const currentPrize = premios[randomPrizeIndex];
-            
+            const randomPrizeIndex = Math.floor(Math.random() * prizes.length);
+            const currentPrize = prizes[randomPrizeIndex];
+
             // Resaltar el premio actual
             highlightPrize(currentPrize);
         }, 100);
 
         setTimeout(() => {
             clearInterval(interval);
-            const winnerPrize = getRandomPrize();
+            const winnerPrize = getRandomPrize(prizes);
+            premioActual = winnerPrize;
+            console.log(premioActual);
             highlightPrize(winnerPrize, true); // Marcar como ganador
             const winnerElement = document.getElementById('raffleWinner');
 
-            // Mostrar el premio ganador
+            // Mostrar el premio ganador (ahora mostramos el nombre del premio completo)
             winnerElement.classList.remove('d-none');
-            winnerElement.textContent = `¡El premio ganador es: ${winnerPrize}!`;
+            winnerElement.textContent = `¡El premio ganador es: ${winnerPrize.premio}!`;
             winnerElement.style.display = 'block';
+
             // Eliminar el premio de la lista
-            removePrize(winnerPrize);
+            removePrize(winnerPrize, prizes);
 
         }, 5000); // Detener la animación después de 5 segundos
     }
 
     function highlightPrize(prize, isWinner = false) {
-        const prizeElement = document.getElementById(`prize-${prize}`);
+        const prizeElement = document.getElementById(`prize-${prize.numero_premio}`);
         const allPrizeElements = document.querySelectorAll('.raffle-prizes span');
 
         // Eliminar la clase de selección de todos los premios
@@ -654,6 +705,12 @@
         // Añadir la clase 'selected' al premio actual
         prizeElement.classList.add('selected');
 
+        // Desplazar el contenedor para que el premio seleccionado sea visible
+        prizeElement.scrollIntoView({
+            block: 'center',
+            inline: 'center'
+        });
+
         // Si es el ganador, se marca con un color llamativo
         if (isWinner) {
             prizeElement.style.color = '#28a745';
@@ -661,15 +718,15 @@
         }
     }
 
-    function getRandomPrize() {
-        const randomIndex = Math.floor(Math.random() * premios.length);
-        return premios[randomIndex];
+    function getRandomPrize(list) {
+        const randomIndex = Math.floor(Math.random() * list.length);
+        return list[randomIndex];
     }
 
-    function removePrize(prize) {
-        const prizeIndex = premios.indexOf(prize);
+    function removePrize(prize, list) {
+        const prizeIndex = list.indexOf(prize);
         if (prizeIndex > -1) {
-            premios.splice(prizeIndex, 1); // Eliminar el premio de la lista
+            list.splice(prizeIndex, 1); // Eliminar el premio de la lista
         }
     }
 
@@ -681,7 +738,7 @@
 
     function addWinnerToList(winner) {
         const listItem = document.createElement('p');
-        listItem.innerHTML = `<span>${winner.numero_emp}</span> - ${winner.nombre}`;
+        listItem.innerHTML = `<span>${winner.numero_emp}</span> - ${winner.nombre} - ${premioActual.numero_premio}`;
         winnerList.appendChild(listItem);
     }
 
@@ -708,7 +765,10 @@
             
             // Muestra el label arriba del nombre
             winnerItem.innerHTML = `
-                <div class="winner-name">${winner.numero_emp} - <strong>${winner.nombre}</strong> <br> ${winner.area}</div>
+                <div class="winner-name">${winner.numero_emp} - <strong>${winner.nombre}</strong> <br> ${winner.area}
+                <br>
+                <span>${winner.n_premio}</span> - <strong>${winner.premio}</strong>
+                </div>
             `;
             
             winnersList.appendChild(winnerItem);
