@@ -22,9 +22,36 @@
     }
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         color: #8ac3ff;
         margin-bottom: 20px;
+    }
+
+    .animate-charcter {
+        text-transform: uppercase;
+        background-image: linear-gradient(
+            -225deg,
+            #d1e9ff 0%,
+            #a3d4ff 29%,
+            #75bfff 67%,
+            #4faafa 100%
+        );
+        background-size: auto auto;
+        background-clip: border-box;
+        background-size: 200% auto;
+        color: #fff;
+        background-clip: text;
+        text-fill-color: transparent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textclip 2s linear infinite;
+        display: inline-block;
+    }
+
+    @keyframes textclip {
+        to {
+            background-position: 200% center;
+        }
     }
 
     .btn-animated {
@@ -300,7 +327,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.5);
         justify-content: center;
         align-items: center;
         z-index: 1000;
@@ -398,6 +425,129 @@
         scrollbar-width: thin; /* Estilo general en Firefox */
         scrollbar-color: #007bff #f1f1f1; /* Color del pulgar y del fondo */
     }
+
+    @keyframes blink {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+
+    .blink-text {
+        animation: blink 1.5s infinite;
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .slide-text {
+        animation: slideIn 1.5s ease-out;
+        color: #8ac3ff;
+        font-weight: bold;
+    }
+
+    .ganador-animado {
+        position: relative;
+        font-size: 6vh;
+        color: #252839; /* Color negro inicial */
+        text-transform: uppercase;
+        font-weight: bold;
+        overflow: hidden;
+    }
+
+    .ganador-animado::before {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0; /* Comienza oculto */
+        height: 100%;
+        color: #01fe87; /* Color verde */
+        white-space: nowrap;
+        overflow: hidden;
+        animation: revealText 3s forwards;
+    }
+
+    @keyframes revealText {
+        0% {
+            width: 0;
+        }
+        100% {
+            width: 100%; /* Se revela todo el texto */
+        }
+    }
+
+    .premio {
+        display: block;
+        margin-top: 10px;
+        font-size: 3rem;
+        color: #252839; /* Color inicial */
+        font-weight: bold;
+        opacity: 0; /* Comienza invisible */
+        transform: translateY(-50px); /* Comienza un poco por encima */
+        animation: premio 3s ease forwards;
+        -webkit-text-stroke: 2px black; /* Contorno negro */
+        text-stroke: 2px black; /* Soporte para otros navegadores */
+    }
+
+    @keyframes premio {
+        0% {
+            transform: translateY(-50px); /* Comienza moviéndose hacia arriba */
+            opacity: 0;
+            color: #252839; /* Color inicial oscuro */
+        }
+        30% {
+            transform: translateY(10px); /* Rebote hacia abajo */
+            opacity: 1;
+            color: #01fe87; /* Color verde brillante */
+        }
+        60% {
+            transform: translateY(-5px); /* Rebotando un poco hacia arriba */
+            color: #ffb900; /* Cambio de color a un amarillo dorado */
+        }
+        100% {
+            transform: translateY(0); /* Finaliza en su posición original */
+            opacity: 1;
+            color: #01fe87; /* Se queda con el color verde brillante */
+        }
+    }
+
+    .waviy {
+        position: relative;
+        -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0, 0, 0, .2));
+        font-size: 60px;
+    }
+
+    .waviy span {
+        position: relative;
+        color: #ffd700; /* Color dorado del texto */
+        text-transform: uppercase;
+        animation: waviy 1s infinite;
+        animation-delay: calc(.1s * var(--i));
+        -webkit-text-stroke: 2px black; /* Contorno negro */
+        text-stroke: 2px black; /* Soporte para otros navegadores */
+    }
+
+    @keyframes waviy {
+        0%, 40%, 100% {
+            transform: translateY(0);
+        }
+        20% {
+            transform: translateY(-20px); /* Subir las letras */
+        }   
+    }
 </style>
 
     <div class="video-container">
@@ -408,7 +558,7 @@
     </div>
 
     <div class="content-section content">
-        <h1 id="title">Rifa Navideña Posada Fiscalia 2024</h1>
+        <h1 id="title" class="animate-charcter">Rifa Navideña Posada Fiscalia 2024</h1>
         <div class="button-container">
             <button id="raffleButton" class="btn btn-primary btn-lg btn-animated">
                 <i class="bi bi-play-fill"></i>
@@ -427,9 +577,8 @@
                 </div>
             @endforeach
         </div>
-        <div id="winner" class="winner d-none">
-            <p><span id="winnerNumber"></span> - <span id="winnerName"></span></p>
-            <p id="winnerLabel"></p>
+        <div id="winner" class="d-none ">
+            <p id="ganador" class="ganador-animado"></p>
         </div>
         <div id="winnerList" class="winner-list d-none" style="overflow-y: auto; ">
             <strong>Ganadores</strong>
@@ -443,6 +592,23 @@
 
     <div id="raffleModal" class="raffle-modal">
         <div class="raffle-modal-content">
+            <div id='premioMayor' class="waviy d-none" style="display: flex; justify-content: center; margin-bottom: 10px">
+                <span style="--i:1">¡</span>
+                <span style="--i:2">P</span>
+                <span style="--i:3">R</span>
+                <span style="--i:4">E</span>
+                <span style="--i:5">M</span>
+                <span style="--i:6">I</span>
+                <span style="--i:7">O</span>
+                <span style="--i:8" class="mx-3"> </span>
+                <span style="--i:9">M</span>
+                <span style="--i:10">A</span>
+                <span style="--i:11">Y</span>
+                <span style="--i:12">O</span>
+                <span style="--i:13">R</span>
+                <span style="--i:14">!</span>
+            </div>
+
             <div id="rafflePrizes" class="raffle-prizes d-none" 
                 style="display: grid; 
                 grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
@@ -450,7 +616,10 @@
                 max-height: 750px; 
                 padding: 10px;"></div>
             <div id="countdown" class="raffle-countdown"></div>
-            <div id="raffleWinner" class="raffle-countdown d-none"></div>
+            <div id="raffleWinner" class="raffle-countdown d-none">
+                <span id="winnerText"></span>
+                <span id="premio" class="premio"></span>
+            </div>
             <button id="closeModalBtn" class="close-modal-btn">&times;</button>
         </div>
     </div>
@@ -462,7 +631,7 @@
     let premios = @json($premios);
     let premiosMayores = @json($premiosMayores);
     let winners = [];
-    let currentWinnerIndex = 0;
+    let currentWinnerIndex = 3;
     let play = false;
     let premioActual = '';
 
@@ -470,12 +639,12 @@
     const stopButton = document.getElementById('stopButton');
     const rouletteDiv = document.getElementById('roulette');
     const winnerDiv = document.getElementById('winner');
-    const winnerNumber = document.getElementById('winnerNumber');
-    const winnerName = document.getElementById('winnerName');
     const winnerPrize = document.getElementById('winnerPrize');
     const winnerList = document.getElementById('winnerList');
     const title = document.getElementById('title');
     const employee = document.getElementById('employee');
+    const ganador = document.getElementById('ganador');
+    const premioMayor = document.getElementById('premioMayor');
 
     const cssContSect = document.querySelectorAll('.content-section');
     const cssEmpl = document.querySelectorAll('.empleados');
@@ -573,8 +742,11 @@
 
         rouletteDiv.classList.add('d-none');
         winnerDiv.classList.remove('d-none');
-        winnerNumber.textContent = randomEmpleado.numero_emp;
-        winnerName.textContent = randomEmpleado.nombre;
+        // winnerNumber.textContent = randomEmpleado.numero_emp;
+        // winnerName.textContent = randomEmpleado.nombre;
+        const concatenado = `${randomEmpleado.numero_emp} - ${randomEmpleado.nombre}`;
+        ganador.textContent = concatenado;
+        ganador.setAttribute('data-text', concatenado);
         setTimeout(function() {
             addWinnerToList(randomEmpleado);
                 winners.push({
@@ -584,7 +756,7 @@
                 n_premio: premioActual.numero_premio,
                 premio: premioActual.premio
             });
-        }, 17000);
+        }, 15000);
 
         // Quitar la clase 'selected' de todos los empleados
         removeHighlightFromAllEmployees();
@@ -635,6 +807,7 @@
 
                 // Mostrar todos los premios
                 if (currentWinnerIndex % 4 === 0) {
+                    premioMayor.classList.remove('d-none');
                     displayPrizes(premiosMayores);
                     startSelection(premiosMayores);
                 } else {
@@ -648,6 +821,7 @@
         closeModalBtn.addEventListener('click', () => {
             modal.style.display = 'none';
             raffleButton.classList.remove('d-none');
+            premioMayor.classList.add('d-none');
         });
     }
 
@@ -680,13 +854,15 @@
             clearInterval(interval);
             const winnerPrize = getRandomPrize(prizes);
             premioActual = winnerPrize;
-            console.log(premioActual);
             highlightPrize(winnerPrize, true); // Marcar como ganador
             const winnerElement = document.getElementById('raffleWinner');
+            const winnerText = document.getElementById('winnerText');
+            const premio = document.getElementById('premio');
 
             // Mostrar el premio ganador (ahora mostramos el nombre del premio completo)
             winnerElement.classList.remove('d-none');
-            winnerElement.textContent = `¡El premio ganador es: ${winnerPrize.premio}!`;
+            winnerText.textContent = "¡El premio ganador es:";
+            premio.textContent = winnerPrize.premio; 
             winnerElement.style.display = 'block';
 
             // Eliminar el premio de la lista
@@ -713,7 +889,7 @@
 
         // Si es el ganador, se marca con un color llamativo
         if (isWinner) {
-            prizeElement.style.color = '#28a745';
+            prizeElement.style.color = '#fff';
             prizeElement.style.fontWeight = 'bold';
         }
     }
@@ -794,11 +970,11 @@
     }
 
     function removeHighlightFromAllEmployees() {
-    const employeeItems = document.querySelectorAll('.empleado-item');
-    employeeItems.forEach(item => {
-        item.classList.remove('selected');  // Elimina la clase 'highlight' de todos
-    });
-}
+        const employeeItems = document.querySelectorAll('.empleado-item');
+        employeeItems.forEach(item => {
+            item.classList.remove('selected');  // Elimina la clase 'highlight' de todos
+        });
+    }
 
 </script>
 @endsection
