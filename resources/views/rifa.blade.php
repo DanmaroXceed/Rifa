@@ -2,6 +2,7 @@
 
 @section('contenido')
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
     body {
         background-color: #f7f9fc;
@@ -637,6 +638,7 @@
     let currentWinnerIndex = 0;
     let play = false;
     let premioActual = '';
+    let winnersShowed = false;
 
     const raffleButton = document.getElementById('raffleButton');
     const stopButton = document.getElementById('stopButton');
@@ -829,7 +831,7 @@
             raffleButton.classList.remove('d-none');
             premioMayor.classList.add('d-none');
 
-            if (premiosMayores.length === 0 && premios.length === 0)  {
+            if (premiosMayores.length === 0 && premios.length === 0 && !winnersShowed)  {
                 stopButton.classList.add('d-none');
                 employee.classList.add('d-none')
                 showWinners();
@@ -874,7 +876,17 @@
             // Mostrar el premio ganador (ahora mostramos el nombre del premio completo)
             winnerElement.classList.remove('d-none');
             winnerText.textContent = "¡El premio ganador es:";
-            premio.textContent = winnerPrize.premio; 
+            premio.textContent = winnerPrize.premio;
+
+            if (winnerPrize.pdi === 1) {
+                // Crear un nuevo elemento para el texto adicional
+                const extraText = document.createElement('span');
+                extraText.textContent = " - PDI"; // El texto que deseas añadir
+                extraText.classList.add('blink-text'); // Agregar la clase al texto nuevo
+
+                // Añadir el nuevo texto al elemento "premio"
+                premio.appendChild(extraText);
+            }
             winnerElement.style.display = 'block';
 
             // Eliminar el premio de la lista
@@ -931,7 +943,9 @@
     }
 
     function showWinners() {
-    // Oculta el botón y la ruleta
+        winnersShowed = true;
+
+        // Oculta el botón y la ruleta
         raffleButton.classList.add('d-none');
         rouletteDiv.classList.add('d-none');
         winnerDiv.classList.add('d-none');
@@ -960,6 +974,33 @@
             `;
             
             winnersList.appendChild(winnerItem);
+
+            // Enviar ganador al servidor
+            fetch('/resultados', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // Token CSRF
+                },
+                body: JSON.stringify({
+                    numero_emp: winner.numero_emp,
+                    nombre: winner.nombre,
+                    area: winner.area,
+                    n_premio: winner.n_premio,
+                    premio: winner.premio,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Registro guardado:', data.data);
+                } else {
+                    console.error('Error al guardar el registro:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error en la solicitud:', error);
+            });
         });
 
         // Espera a que termine la animación antes de ejecutar guardarPagina()

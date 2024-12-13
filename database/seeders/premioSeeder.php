@@ -20,6 +20,7 @@ class premioSeeder extends Seeder
                     "numero_premio" => $data[0],
                     "premio" => $data[1],
                     "pm" => $data[2],
+                    "pdi" => $data[3],
                 ]);   
             }
             $firstline = false;
