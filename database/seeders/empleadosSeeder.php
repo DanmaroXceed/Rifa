@@ -13,7 +13,7 @@ class empleadosSeeder extends Seeder
      */
     public function run(): void
     {
-        $csvFile = fopen(base_path("catalogos/Sorteofiscalia2024.csv"), "r");
+        $csvFile = fopen(base_path("catalogos/ListaEmpleados2024.csv"), "r");
 
         $firstline = true;
 
