@@ -673,14 +673,14 @@
         play = true;
     });
 
-    stopButton.addEventListener('click', () => {
-        stopButton.classList.add('d-none');
-        employee.classList.add('d-none')
-        showWinners();
-        setTimeout(()=>{
-            guardarPagina();
-        }, 2000);
-    });
+    // stopButton.addEventListener('click', () => {
+    //     stopButton.classList.add('d-none');
+    //     employee.classList.add('d-none')
+    //     showWinners();
+    //     setTimeout(()=>{
+    //         guardarPagina();
+    //     }, 2000);
+    // });
 
     function startRoulette() {
         let interval = setInterval(() => {
@@ -777,7 +777,7 @@
         raffleButton.classList.add('btn-fix');
         raffleButton.classList.remove('btn');
 
-        stopButton.classList.remove('d-none');
+        // stopButton.classList.remove('d-none');
         stopButton.classList.add('btn-stop-fix');
 
         winnerList.classList.remove('d-none');
@@ -812,11 +812,11 @@
                 clearInterval(countdownInterval);
 
                 // Mostrar todos los premios
-                if (currentWinnerIndex % 4 === 0) {
+                if ((currentWinnerIndex % 4 === 0 && premiosMayores.length > 0) || premios.length === 0) {
                     premioMayor.classList.remove('d-none');
                     displayPrizes(premiosMayores);
                     startSelection(premiosMayores);
-                } else {
+                } else if (premios.length > 0){
                     displayPrizes(premios);
                     startSelection(premios);
                 }
@@ -828,6 +828,12 @@
             modal.style.display = 'none';
             raffleButton.classList.remove('d-none');
             premioMayor.classList.add('d-none');
+
+            if (premiosMayores.length === 0 && premios.length === 0)  {
+                stopButton.classList.add('d-none');
+                employee.classList.add('d-none')
+                showWinners();
+            }
         });
     }
 
@@ -955,6 +961,14 @@
             
             winnersList.appendChild(winnerItem);
         });
+
+        // Espera a que termine la animación antes de ejecutar guardarPagina()
+        winnersDisplay.addEventListener('animationend', function handleAnimationEnd(event) {
+            if (event.animationName === "slideIn") { // Verifica si es la animación que esperas
+                guardarPagina(); // Llama a la función
+                winnersDisplay.removeEventListener('animationend', handleAnimationEnd); // Evita múltiples llamadas
+            }
+        });
     }
 
     // Nueva función para mover el scroll al ganador
@@ -992,7 +1006,7 @@
         // Crear un enlace para descargar el archivo
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "pagina_completa.html";
+        link.download = "GanadoresRifaFiscalia2024.html";
 
         // Simular un clic en el enlace para iniciar la descarga
         link.click();
