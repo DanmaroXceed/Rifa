@@ -10,7 +10,7 @@ class premioSeeder extends Seeder
 {
     public function run(): void
     {
-        $csvFile = fopen(base_path("catalogos/premios.csv"), "r");
+        $csvFile = fopen(base_path("catalogos/ListaRegalos2024.csv"), "r");
 
         $firstline = true;
 

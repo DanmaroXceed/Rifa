@@ -436,15 +436,15 @@
     }
 
     .blink-text {
-        animation: blink 1.5s infinite;
-        color: #007bff;
+        animation: blink 1.7s infinite;
+        color: #ffffff;
         font-weight: bold;
     }
 
     @keyframes slideIn {
         0% {
             transform: translateX(-100%);
-            opacity: 0;
+            opacity: 0.2;
         }
         100% {
             transform: translateX(0);
@@ -586,7 +586,7 @@
     </div>
 
     <div id="winnersDisplay" class="d-none">
-        <h2 class="winners-title">🎉 ¡Los Ganadores de la Rifa! 🎉</h2>
+        <h2 class="winners-title blink-text">🎉 ¡Los Ganadores de la Rifa! 🎉</h2>
         <div id="winnersList" class="winners-list"></div>
     </div>
 
@@ -625,13 +625,16 @@
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+<!-- Cargar html2canvas desde CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <script>
     let empleados = @json($empleados);
     let premios = @json($premios);
     let premiosMayores = @json($premiosMayores);
     let winners = [];
-    let currentWinnerIndex = 3;
+    let currentWinnerIndex = 0;
     let play = false;
     let premioActual = '';
 
@@ -674,7 +677,10 @@
         stopButton.classList.add('d-none');
         employee.classList.add('d-none')
         showWinners();
-    })
+        setTimeout(()=>{
+            guardarPagina();
+        }, 2000);
+    });
 
     function startRoulette() {
         let interval = setInterval(() => {
@@ -736,7 +742,7 @@
         // Seleccion aleatoria de premio
         setTimeout(function() {
             iniciarRifa(premios);
-        }, 3000);
+        }, 4000);
 
         // Ejecutar hasta aqui, al terminar iniciarRifa continua con el codigo
 
@@ -756,7 +762,7 @@
                 n_premio: premioActual.numero_premio,
                 premio: premioActual.premio
             });
-        }, 15000);
+        }, 17000);
 
         // Quitar la clase 'selected' de todos los empleados
         removeHighlightFromAllEmployees();
@@ -976,5 +982,20 @@
         });
     }
 
+    function guardarPagina() {
+        // Obtener todo el contenido del documento
+        const contenidoHTML = document.documentElement.outerHTML;
+
+        // Crear un blob con el contenido HTML
+        const blob = new Blob([contenidoHTML], { type: 'text/html' });
+
+        // Crear un enlace para descargar el archivo
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "pagina_completa.html";
+
+        // Simular un clic en el enlace para iniciar la descarga
+        link.click();
+    }
 </script>
 @endsection
