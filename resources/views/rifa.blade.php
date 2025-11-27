@@ -559,7 +559,7 @@
     </div>
 
     <div class="content-section content">
-        <h1 id="title" class="animate-charcter">Rifa Navideña Posada Fiscalia 2024</h1>
+        <h1 id="title" class="animate-charcter">Rifa Navideña Posada Fiscalia 2025</h1>
         <div class="button-container">
             <button id="raffleButton" class="btn btn-primary btn-lg btn-animated">
                 <i class="bi bi-play-fill"></i>

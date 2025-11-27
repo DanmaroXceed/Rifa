@@ -9,6 +9,7 @@ class premio extends Model
     protected $fillable = [
         'numero_premio',
         'premio',
-        'pm'
+        'pm',
+        'pdi'
     ];
 }
