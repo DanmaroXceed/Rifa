@@ -1,0 +1,349 @@
+/* --- Responsive general --- */
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Video fondo */
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.video-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+#background-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Contenido centrado */
+.content-overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 0 15px;
+    color: white;
+}
+
+/* Título animado */
+.animate-character {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    margin-bottom: 20px;
+}
+
+/* Botón */
+.btn-start {
+    padding: 12px 30px;
+    font-size: clamp(1rem, 4vw, 1.3rem);
+    background: #d4af37;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+}
+
+.btn-start:hover {
+    background: #b8860b;
+    transform: scale(1.05);
+}
+
+/* Sección de premios */
+.section-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.premios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.premio-card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.premio-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.premio-card.pm {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #000;
+    font-weight: bold;
+    border: 2px solid gold;
+    box-shadow: 0 0 12px rgba(255,215,0,0.5);
+}
+
+.premio-card.pdi {
+    background: rgba(0,128,0,0.3);
+    border: 2px solid #4caf50;
+}
+
+.premio-numero {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+/* Ruleta */
+.premio-activo-title {
+    background: rgba(0,0,0,0.6);
+    color: gold;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+    display: inline-block;
+}
+
+.nombre-animacion {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.4);
+    padding: 20px;
+    border-radius: 16px;
+    min-width: 280px;
+    margin-top: 80px;
+}
+
+.ganador-final {
+    text-align: center;
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    border-radius: 16px;
+    max-width: 500px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.ganador-nombre {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    color: gold;
+    margin: 10px 0;
+}
+
+.ganador-area, .ganador-premio {
+    font-size: clamp(1rem, 4vw, 1.3rem);
+    color: white;
+}
+
+/* Utilidad */
+.hidden {
+    display: none !important;
+}
+
+/* Mensaje final */
+#fin-rifa-screen h2 {
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    color: gold;
+}
+
+/* Pantalla de ganadores */
+.ganadores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px 0;
+}
+
+.ganador-item {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid gold;
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.ganador-item h4 {
+    color: gold;
+    margin: 0 0 8px;
+    font-size: 1.3rem;
+}
+
+.ganador-item .premio-nombre {
+    font-weight: bold;
+    color: #ffd700;
+    margin: 6px 0;
+}
+
+.ganador-item .detalle {
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+/* Botón volver */
+#btn-volver-inicio {
+    margin-top: 20px;
+}
+
+.btn-flotante-ganadores {
+    position: fixed;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: #d4af37;
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.btn-flotante-ganadores:hover {
+    background-color: #ffd700;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+.ganador-item {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    border-left: 3px solid gold;
+}
+
+.ganador-item .nombre {
+    font-weight: bold;
+    color: gold;
+    font-size: 1.1rem;
+}
+
+.ganador-item .detalle {
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+/* Modal de ganadores - Estilo personalizado */
+#modalGanadores .modal-content {
+    background: #0b1a2d !important;
+    color: white !important;
+    border: 1px solid #1e3a5f;
+}
+
+#modalGanadores .modal-header {
+    background: #0d253f;
+    border-bottom: 1px solid #1e3a5f !important;
+    padding: 1rem 1.25rem !important;
+}
+
+#modalGanadores .modal-title {
+    color: #FFD700 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+#modalGanadores .btn-close {
+    color: white !important;
+    opacity: 0.8 !important;
+    margin-top: -4px;
+}
+
+.ganador-item-list {
+    border-bottom: 1px solid #1e3a5f;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.ganador-item-list .nombre {
+    color: #FFD700;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.ganador-item-list .premio {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.ganador-item-list .area {
+    color: #8ac9ff;
+    font-size: 0.875rem;
+}
+
+/* --------------- */
+
+/* Fondo degradado oscuro para el modal */
+.bg-gradient-dark {
+    background: linear-gradient(135deg, #0b1a2d, #1a2c47);
+}
+
+/* Animación del título */
+.animate-title {
+    animation: glow-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow-pulse {
+    from {
+        text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+    to {
+        text-shadow: 0 0 16px rgba(255, 215, 0, 0.9), 0 0 24px gold;
+    }
+}
+
+/* Botón dentro del modal */
+#btn-iniciar-sorteo-especial {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+}
+
+#btn-iniciar-sorteo-especial:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.6);
+}

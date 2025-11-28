@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\empleado;
 use App\Models\premio;
 use App\Models\resultado;
+use App\Models\Ganador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -138,5 +139,91 @@ class MainController extends Controller
         } catch (Exception $e) {
             return response()->json(['success' => false, 'status' => 'Error al reiniciar el sistema: ' . $e->getMessage()]);
         }
+    }
+
+    public function resetGanadores()
+    {
+        try {
+            Ganador::truncate();
+            return response()->json(['success' => true, 'status' => '¡Ganadores reiniciados con éxito!']);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'status' => 'Error al reiniciar los ganadores: ' . $e->getMessage()]);
+        }
+    }
+
+    public function getPremiosDisponibles()
+    {
+        $premiosUsados = Ganador::pluck('n_premio')->toArray();
+        return Premio::select('id', 'numero_premio', 'premio', 'pm', 'pdi')
+            ->whereNotIn('numero_premio', $premiosUsados)
+            ->get();
+    }
+
+    public function getEmpleadosDisponibles()
+    {
+        $ganadores = Ganador::pluck('numero_emp')->toArray();
+        return Empleado::select('id', 'numero_emp', 'nombre', 'area')
+            ->whereNotIn('numero_emp', $ganadores)
+            ->get();
+    }
+
+    public function registrarGanador(Request $request)
+    {
+        $request->validate([
+            'numero_emp' => 'required|string',
+            'nombre' => 'required|string',
+            'area' => 'required|string',
+            'n_premio' => 'required|string',
+            'premio' => 'required|string',
+        ]);
+
+        Ganador::create($request->only(['numero_emp', 'nombre', 'area', 'n_premio', 'premio']));
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getGanadores()
+    {
+        $ganadores = Ganador::select('nombre', 'area', 'n_premio', 'premio')
+            ->orderBy('created_at', 'asc')
+            ->get();
+        return response()->json($ganadores);
+    }
+
+    public function sorteoExtraoficial(Request $request)
+    {
+        $request->validate([
+            'premio' => 'required|string|max:255',
+        ]);
+
+        // Obtener empleados que NO hayan ganado aún
+        $ganadoresActuales = Ganador::pluck('numero_emp')->toArray();
+        $empleadosDisponibles = Empleado::whereNotIn('numero_emp', $ganadoresActuales)->get();
+
+        if ($empleadosDisponibles->isEmpty()) {
+            return response()->json(['error' => 'No hay empleados disponibles para sorteo.'], 400);
+        }
+
+        // Seleccionar uno al azar
+        $ganador = $empleadosDisponibles->random();
+
+        // Guardar en la misma tabla de ganadores
+        Ganador::create([
+            'numero_emp' => $ganador->numero_emp,
+            'nombre' => $ganador->nombre,
+            'area' => $ganador->area,
+            'n_premio' => 'EXTRA', // o puedes usar null si el campo lo permite
+            'premio' => $request->premio,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'ganador' => [
+                'nombre' => $ganador->nombre,
+                'area' => $ganador->area,
+                'premio' => $request->premio,
+                'n_premio' => 'EXTRA'
+            ]
+        ]);
     }
 }

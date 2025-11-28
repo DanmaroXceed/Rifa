@@ -1,7 +1,7 @@
 @extends('app')
 
 @section('contenido')
-    <link href="{{ asset('css/menu.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/menu.css?v=' . time()) }}" rel="stylesheet">
     <div class="video-container">
         <video autoplay muted loop id="background-video">
             <source src="{{ asset('background.mp4') }}" type="video/mp4">
@@ -33,6 +33,13 @@
                 @csrf
                 <button type="submit" class="menu-button critical" onclick="return confirm('¿Estás seguro de que deseas reiniciar el sistema? Esta acción eliminará todos los datos.')">
                     Reiniciar Sistema
+                </button>
+            </form>
+
+            <form action="{{ route('admin.reset.ganadores') }}" method="POST" class="upload-form">
+                @csrf
+                <button type="submit" class="menu-button warning" onclick="return confirm('¿Estás seguro de que deseas reiniciar solo los ganadores? Esta acción vaciará la lista de ganadores.')">
+                    Reiniciar Ganadores
                 </button>
             </form>
         </div>
