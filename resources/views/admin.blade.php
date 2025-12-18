@@ -9,6 +9,19 @@
         </video>
     </div>
 
+    <div id="password-modal-overlay" class="password-modal-overlay">
+        <div class="password-modal">
+            <h2>Confirmar Acción</h2>
+            <p id="modal-text-description"></p>
+            <input type="password" id="password-input" placeholder="Contraseña...">
+            <div id="password-error">Contraseña incorrecta.</div>
+            <div class="password-modal-buttons">
+                <button id="confirm-reset-button">Confirmar</button>
+                <button id="cancel-reset-button">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="menu-container">
         <h1 class="menu-title">Administrar Datos</h1>
 
@@ -29,16 +42,16 @@
             ])
             @endcomponent
 
-            <form action="{{ route('admin.reset') }}" method="POST" class="upload-form">
+            <form action="{{ route('admin.reset') }}" method="POST" class="upload-form" id="reset-sistema-form">
                 @csrf
-                <button type="submit" class="menu-button critical" onclick="return confirm('¿Estás seguro de que deseas reiniciar el sistema? Esta acción eliminará todos los datos.')">
+                <button type="submit" class="menu-button critical">
                     Reiniciar Sistema
                 </button>
             </form>
 
-            <form action="{{ route('admin.reset.ganadores') }}" method="POST" class="upload-form">
+            <form action="{{ route('admin.reset.ganadores') }}" method="POST" class="upload-form" id="reset-ganadores-form">
                 @csrf
-                <button type="submit" class="menu-button warning" onclick="return confirm('¿Estás seguro de que deseas reiniciar solo los ganadores? Esta acción vaciará la lista de ganadores.')">
+                <button type="submit" class="menu-button warning">
                     Reiniciar Ganadores
                 </button>
             </form>
@@ -60,14 +73,81 @@
             });
         });
 
+        // --- Unified Form and Modal Logic ---
+        let formToSubmit = null;
+        const passwordModalOverlay = document.getElementById('password-modal-overlay');
+        const modalTextDescription = document.getElementById('modal-text-description');
+        const confirmResetButton = document.getElementById('confirm-reset-button');
+        const cancelResetButton = document.getElementById('cancel-reset-button');
+        const passwordInput = document.getElementById('password-input');
+        const passwordError = document.getElementById('password-error');
+
+        // Single event listener for all upload forms
         document.querySelectorAll('.upload-form').forEach(form => {
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
+                const formId = this.id;
 
-                const formData = new FormData(this);
-                const messageContainer = document.getElementById('message-container');
+                if (formId === 'reset-ganadores-form') {
+                    formToSubmit = this;
+                    modalTextDescription.textContent = 'Por favor, ingresa la contraseña para reiniciar los ganadores.';
+                    openModal();
+                } else if (formId === 'reset-sistema-form') {
+                    formToSubmit = this;
+                    modalTextDescription.textContent = 'Esta acción eliminará todos los datos. Ingresa la contraseña para reiniciar el sistema.';
+                    openModal();
+                } else {
+                    // This handles the file upload forms which are not protected
+                    submitForm(this);
+                }
+            });
+        });
 
-                fetch(this.action, {
+        // --- Modal Control Functions ---
+        cancelResetButton.addEventListener('click', () => {
+            closeModal();
+        });
+
+        passwordModalOverlay.addEventListener('click', (event) => {
+            if (event.target === passwordModalOverlay) {
+                closeModal();
+            }
+        });
+
+        confirmResetButton.addEventListener('click', () => {
+            const hardcodedPassword = '$admin_rifa_2025$'; // IMPORTANT: Change this to a strong, secret password
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === hardcodedPassword) {
+                if (formToSubmit) {
+                    submitForm(formToSubmit);
+                }
+                closeModal();
+            } else {
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        function openModal() {
+            passwordModalOverlay.style.display = 'flex';
+            passwordInput.focus();
+        }
+
+        function closeModal() {
+            passwordModalOverlay.style.display = 'none';
+            passwordError.style.display = 'none';
+            passwordInput.value = '';
+            formToSubmit = null;
+        }
+
+        // Generic function to handle form submission via fetch
+        function submitForm(formElement) {
+            const formData = new FormData(formElement);
+            const messageContainer = document.getElementById('message-container');
+
+            fetch(formElement.action, {
                     method: 'POST',
                     body: formData,
                     headers: {
@@ -95,7 +175,72 @@
                     alertDiv.textContent = 'Ocurrió un error inesperado.';
                     messageContainer.appendChild(alertDiv);
                 });
-            });
-        });
+        }
     </script>
+    <style>
+        .password-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+        }
+
+        .password-modal {
+            background-color: #2c2c2c;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .password-modal h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .password-modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .password-modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        #confirm-reset-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        #cancel-reset-button {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        #password-error {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 @endsection

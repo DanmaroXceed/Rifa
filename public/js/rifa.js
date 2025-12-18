@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const ganadores = await response.json();
 
             if (ganadores.length === 0) {
-                listaGanadoresModal.innerHTML = '<p class="text-center text-muted">Aún no hay ganadores.</p>';
+                listaGanadoresModal.innerHTML = '<p class="text-center">Aún no hay ganadores.</p>';
             } else {
                 listaGanadoresModal.innerHTML = ganadores.map(g => `
                     <div class="ganador-item">
